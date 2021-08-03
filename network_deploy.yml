@@ -1,0 +1,22 @@
+---
+# Deployment of oVirt environment for cluster on top of HCI gluster supported cluster deployment
+# v0.001 20210302
+# file: /ovirt_deploy.yml
+# Prerequisits:
+# 1) Base Nodes three node cluster for HCI with ovirt volumes under gluster: engine, data, vmstore 
+# 2) Host to have DNS resolution for short DNS names of three nodes
+# 3) Deploy template vm from cloud image of centos 8 streams.
+# 4) Deploy test VM.
+# How to use this file: Ex: ansible-playbook hci_deploy.yml --limit  or to limit to one node  ansible-playbook hci_deploy.yml --limit thor
+
+# Deployment Target systems defined
+- name: Ansible Pinging Host which validates SSH passwordless login
+  hosts: ovirt_engine
+  #gather_facts: false
+  become: false
+
+####### Deployment Section #############
+
+# Once hci cluster is built ovirt01 needs things done for it
+  roles: 
+    - ovirt

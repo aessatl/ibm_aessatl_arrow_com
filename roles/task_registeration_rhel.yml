@@ -1,0 +1,37 @@
+---
+# Attachment to repositories needed to enable RHEL OS to deploy full cluster 
+# v0.02 20210330
+# file: /roles/task_regisration_rhel.yml
+## BROKEN: this attaches on pool but packages not able to install all what I need  "subscription-manager register --org=12601905 --activationkey=OCP_oVirt_x86_Cluster --force"
+
+- name: Set RHN subscription for RHEV HCI Nodes
+  community.general.redhat_subscription:
+    state: present
+    activationkey: "{{ vault_rhn_orgID }}"
+    org_id: "{{ vault_rhn_orgID_password }}"
+    # pool: '^(8a85f9a17846c7c701787e4f082f4d14)$' # cleSubscription Name:   60 Day Evaluation of Red Hat Hyperconverged Infrastructure for Virtualization, Self-Supported with Guests (3 Physical of Virtual Nodes)
+
+# Broken: Below for RHEV not good idea as only a few channels are helpful
+# - name: Replace disable for enable for each channel as RHEV HCI lacks this intelegence
+#   ansible.builtin.replace:
+#     path: /etc/yum.repos.d/redhat.repo
+#     regexp: 'enabled = 1'
+#     replace: 'enabled = 0'
+#     backup: yes
+
+# - name: Now go back to repo and disable rhvh-4-build-for-rhel-8-x86_64-debug-rpms due to error about missing download # Optional from shell test with "yum repolist all"
+#   command: "{{ item }}"
+#   with_items:
+#   - subscription-manager repos --disable=rhvh-4-build-for-rhel-8-x86_64-debug-rpms
+#   - subscription-manager repos --disable=rhel-7-server-rhvh-4.2-eus-source-rpms
+#   - subscription-manager repos --disable=rhel-7-server-rhvh-4.2-eus-debug-rpms
+#   - subscription-manager repos --disable=rhel-7-server-rhvh-4.3-eus-rpms
+#   - subscription-manager repos --disable=rhel-7-server-rhvh-4.2-eus-rpms
+
+- name: Now go back to repo and disable all but rhvh-4 and install specific engine version # Case 02907988
+  command: "{{ item }}"
+  with_items:
+  - subscription-manager repos --disable=*
+  - subscription-manager repos --enable=rhvh-4-for-rhel-8-x86_64-rpms
+  # - yum install redhat-virtualization-host-image-update-4.4.4-20210307.0.el8_3  # << Broken as it asks for two more keys to be accepted >>>
+  

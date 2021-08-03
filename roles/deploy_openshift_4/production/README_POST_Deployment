@@ -1,0 +1,43 @@
+# This file is for post successful deployment steps and notes of common next tasks 
+# version 20200115
+
+# Login to web UI
+
+
+
+
+# Task within web UI
+
+
+
+# Login to CLI
+
+
+
+
+# Task within CLI
+
+
+
+
+# Misc tasks needed
+# Typical setup flow and tasks
+1) Create groups
+2) test error notification for email and syslog
+3) setup initial test project
+2) Validate test container deployment
+3) Increase number of containers within deployment
+4) Test inject data into cluster 
+
+# Backup and recovery
+
+# link to LDAP for user security and group access control within envionment
+
+# Adding a new worker node
+
+# Adding more storage to worker nodes
+
+# Adding infrastructure ingress connection definition
+
+# Running heath check for environment
+

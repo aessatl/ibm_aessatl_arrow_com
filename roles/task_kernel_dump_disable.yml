@@ -1,0 +1,11 @@
+---
+# This role installs ldap auth client modules and binds to IDM cluster LDAP and Kerberos. Goal is clients using LDAP auth.
+# v0.1 20210407
+# Documentation: https://github.com/freeipa/ansible-freeipa
+# file: /roles/task_kernel_dump_disable.yml 
+# <<<<<<<<<DRAFT>>>>>>>>>>>
+
+- name: Make sure kernel core dump services are set to disable as boot volume space is less than RAM on hosts
+  ansible.builtin.service:
+    name: kdump
+    state: disable

@@ -1,0 +1,21 @@
+# This file is for deployment debug steps and notes of errors common or known. 
+# version 20200115
+
+# Fail step and recommendations
+1) Did you plug it in?
+
+2) Did you RTFM before starting?
+
+3) Are the hypevisors working?
+
+4) Did you check the logs?
+
+5) Did you forget a variable for site?
+
+6) 
+
+
+#  Known issues and recommendations
+
+
+

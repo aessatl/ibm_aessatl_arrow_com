@@ -1,0 +1,90 @@
+---
+# Configuration of unified /etc/hosts file and network settings
+# v1.01 20210305
+# file: /roles/task_network_hosts.yml
+
+
+- name: Copy a version of hosts file common for nodes to ignite cluster
+  ansible.builtin.copy:
+    src: hosts_ignition_template
+    dest: /etc/hosts
+    group: root
+    setype: named_conf_t
+    mode: 0644
+- name: install NetworkManager client and tools
+  yum:
+    name: 
+    - NetworkManager
+    - NetworkManager-tui
+    state: latest
+  become: true
+
+
+# Create bridge for storage with IP bound. MTU 9k and hairpin set for VM quick return
+# Broken:  Error below
+# TASK [hci_cluster : Create bridge interface br-st] **********************************************************************************************************************An exception occurred during task execution. To see the full traceback, use -vvv. The error was: ValueError: Namespace NMClient not available
+# fatal: [thor]: FAILED! => changed=false 
+#   msg: Failed to import the required Python library (NetworkManager glib API) on thor.penguinpages.local's Python /usr/libexec/platform-python. Please read module documentation and install in the appropriate location. If the required library is installed, but Ansible is using the wrong Python interpreter, please consult the documentation on ansible_python_interpreter
+# - name: Create bridge interface br-st
+#   nmcli:
+#     conn_name: br-st
+#     type: bridge
+#     state: present
+#     stp: no
+#     hairpin: yes
+#   become: yes
+# - name: Create bridge interface br-st slave '{{ storage_nic }}'
+#   nmcli:
+#     conn_name: '{{ storage_nic }}'
+#     ifname: '{{ storage_nic }}'
+#     type: bridge-slave
+#     master: br-st
+#     state: present
+#     stp: no
+#   become: yes
+
+
+# ##  Broken: https://github.com/ansible/ansible/issues/48055   CentOS8 NMCLI GLIB module depreciated
+# #Setup storage interface IP 
+# - name: install needed network manager libs
+#   yum:
+#     name: '{{ item }}'
+#     state: installed
+#   with_items:
+#     - NetworkManager-glib
+#     - libnm-qt-devel.x86_64
+#     - nm-connection-editor.x86_64
+#     - libsemanage-python
+#     - policycoreutils-python
+# - name: Bind IP for storage replication # https://docs.ansible.com/ansible/2.5/modules/nmcli_module.html
+#   nmcli:
+#     type: ethernet
+#     conn_name: '{{ storage_nic }}'
+#     ifname: {{ storage_nic }}
+#     ip4: '{{ storage_ip }}'
+#     # gw4: '{{ item.gw4 }}'run
+#     state: present
+
+# - debug:
+#     msg: "{{ storage_nic }} this should be NIC of thor for storage"
+# - debug:
+#     msg: "{{ storage_ip}} this should be NIC of thor for storage"
+# Hack workaround using shell
+# Broken:  This needs to be setup with bridge interface first "br-st" and bind IP to bridge interface.
+# FUBAR: THis CLI hack creates duplicate interfaces .. ugh..
+# shell command: nmcli connection add type ethernet ifname ens15f0 con-name ens15f0 ipv4.address 172.16.101.101/24 mtu 9000 autoconnect yes
+# - name: This command is hack script to create bridge br-st
+#   shell: 
+#     cmd: nmcli connection add ifname br-ex type bridge con-name br-ex
+# - name: This command is hack script to bind physical nic "{{ storage_nic }}" to br-ex
+#   shell: 
+#     cmd: nmcli con add type bridge-slave ifname "{{ storage_nic }}" master br-ex
+# - name: This command is hack script to bind static IP to bridge br-ex
+#   shell: 
+#     cmd: nmcli connection modify br-ex ipv4.address "{{ storage_ip }}"/24 mtu 9000 autoconnect yes
+# # restart network services as the command to start interface does not bring up IP component.  Seems to ignore this or run after commands.. so does not do job
+# - name: Reload service NetworkManager, in all cases
+#   service:
+#     name: NetworkManager
+#     state: restarted
+

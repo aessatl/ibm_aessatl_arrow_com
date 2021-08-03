@@ -1,0 +1,8 @@
+---
+# This role sets up worker nodes in OCP and sets up local disk to be used for persistent storage claim.
+# v0.001 20210218
+# file: /roles/task_psc_disk_das.yml
+
+# Pull disk ID and store as variable
+
+# Connect to OCP and define new PSC volume

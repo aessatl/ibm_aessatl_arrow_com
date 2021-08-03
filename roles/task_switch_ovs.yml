@@ -1,0 +1,19 @@
+---
+# This role is to setup OVS switch with additional VLANs and network settings via oVirt
+# v0.000 20210131
+# file: /roles/task_switch_ovs.yml
+
+# Connect to ovirt00 engine
+
+
+# Set variable for bridge interface used for clients / 
+
+
+
+# Create VLAN
+
+
+
+
+
+

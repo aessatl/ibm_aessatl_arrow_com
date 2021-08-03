@@ -1,0 +1,9 @@
+---
+# This file is used for calling galaxy requirements to be installed
+# 20210304
+# file: /requirements.yml
+# Needs testing
+# Documentation: https://docs.ansible.com/ansible/latest/galaxy/user_guide.html
+[galaxy]
+server_list = ovirt.ovirt
+

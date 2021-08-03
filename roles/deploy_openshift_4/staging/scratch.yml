@@ -1,0 +1,58 @@
+---
+- name: Test playbook to learn basics
+  remote_user: root
+  hosts: all
+  # Try to use input from ansible-playbook run command.  Set variable that can be kept throughout all later called playbooks
+  var: var_os_version == {{ version }}
+  #  Try include_vars  to read in inventory based on which extra variable supplied.
+  include_vars:
+    dir: host_vars
+    files_matching: inventory_os2_cluster.yml
+    when: version == "3.11"
+  # read in entire file such as inventory file based on extra variable input
+  vars_files:
+        files_matching: inventory_os_cluster.yml
+    when: version == "3.11"
+
+  tasks:
+    # Just print out what we collected and see if we really are using mysql_variables
+    - name: Print a extra variable diretly
+      debug:
+      msg: "The fact is {{ version }}"
+    # Just print OS version which is standard ansible variable.
+    - name: Print a set variable within playbook based on extra variable.
+      debug:
+      msg: "The fact is {{ var_version_os }}"
+
+
+######### 
+---
+
+- name: Loading platform variables
+  include_vars: "{{item}}"
+  with_first_found:
+    - "{{ansible_distribution}}-{{ansible_distribution_release}}.yml"
+    - "{{ansible_distribution}}.yml"
+    - "{{ansible_os_family}}.yml"
+
+- name: Installing NFS client
+  package:
+    pkg: "{{ nfs_client_packages }}"
+    state: present
+  become: yes
+  when: nfs_server is defined and 'fileserver' not in group_names
+
+- name: Setting up NFS mounts
+  mount:
+    name: "{{ oc_storage_dir }}"
+    src: "{{ nfs_server }}:{{ oc_storage_dir }}"
+    fstype: nfs
+    state: mounted
+    opts: "rw,sync,vers=3"
+  become: yes
+  when: nfs_server is defined and 'fileserver' not in group_names
+#############
+---
+
+nfs_client_packages:
+  - nfs-common

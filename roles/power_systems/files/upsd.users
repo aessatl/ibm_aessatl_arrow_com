@@ -1,0 +1,17 @@
+# File for every client and server to reflect nut user accounts for use in services
+# v0.11 20210212
+# file: /roles/common/files/upsd.users
+# Below the only variable replacement needed is to exchange string "vault_nut_ssh_password" with ansible password vault variable "{{vault_nut_ssh_password"
+
+[nut]
+password = vault_nut_ssh_password
+upsmon master
+allowfrom = localhost
+actions = set
+instcmds = all
+upsmon master
+
+[nutmonitor]
+password = vault_nutmonitor_ssh_password
+allowfrom = network
+upsmon slave

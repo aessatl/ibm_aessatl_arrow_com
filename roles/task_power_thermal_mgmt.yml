@@ -1,0 +1,210 @@
+---
+# Task is to manage power and thermal monitoring and infrastructure for environment
+# v1.0 20210218
+# file: /roles/task_power_thermal_mgmt.yml
+# UPS tasks use variable for host of "group_ups_server", "group_ups_client" "group_pdu_client" and if needed "group_pdu_client_port" to define power managment and control.
+# Secondary set of tasks is to install "sensors" on physical systems to report and track thermal trends and trigger action based on state changes
+# Broken: needs UPS client and server testing for graceful shutdown
+
+# # Manual downloads to get packages for installation of nut for RHEV Needs to be translated to ansible
+# wget https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/n/nut-2.7.4-26.el8.x86_64.rpm
+# wget http://mirror.centos.org/centos/8/BaseOS/x86_64/os/Packages/freeipmi-1.6.1-1.el8.x86_64.rpm
+# wget https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/n/nut-client-2.7.4-26.el8.x86_64.rpm
+# yum install freeipmi-1.6.1-1.el8.x86_64.rpm -y
+# yum install nut-client-2.7.4-26.el8.x86_64.rpm -y
+# yum install libusb-0.1.5-12.el8.x86_64.rpm -y
+# yum install nut-2.7.4-26.el8.x86_64.rpm -y
+
+# Working to download files for nut into /tmp
+# - name: Download RPM files to RHEV to install nut for UPS monitoring
+#   get_url:
+#     url: "{{ item }}"
+#     dest: /tmp
+#   loop: 
+#     - https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/n/nut-2.7.4-26.el8.x86_64.rpm
+#     - http://mirror.centos.org/centos/8/BaseOS/x86_64/os/Packages/freeipmi-1.6.1-1.el8.x86_64.rpm
+#     - https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/n/nut-client-2.7.4-26.el8.x86_64.rpm
+# - name: Find all rpm files in /tmp folder
+# Broken: Needs means to install RPM packages saved in /tmp
+#    find:
+#      paths: "/tmp"
+#      patterns: "*.rpm"
+#    register: rpm_files
+# - name: Install nut and dependancies saved in /tmp folder
+#   shell: yum install *.rpm -y
+#     chdir: /tmp
+
+## Needs rework under RHEV
+# # Setup "nut" user as both client and server need it
+# - name: Add the user 'nut' with a bash shell, appending the group 'wheel'and generate ssh key for hosts "{{ target_hosts }}"
+#   user:
+#     name: '{{ vault_nut_ssh }}'
+#     shell: /bin/bash
+#     groups: wheel
+#     state: present
+#     generate_ssh_key: yes
+#     ssh_key_bits: 2048
+#     ssh_key_file: .ssh/id_rsa
+#     createhome: yes
+#     password: "{{ vault_nut_ssh_password | string | password_hash('sha512') }}"
+#   when: "'group_ups_server' in group_names"
+
+# # UPS_SERVER: UPS01,02,03 are physical resources with USB attachment to different physical systems task one is to install "nut" for USB monitoring on each phsical server
+# - name: When target system is ups_server then install sever servicse and copy files for configuration
+#   yum:
+#     name:
+#     - nut
+#     state: latest 
+#   when: "'group_ups_server' in group_names"
+# - lineinfile:  # Set ups host state to server
+#     path: /etc/ups/nut.conf
+#     regexp: '^MODE='
+#     line: 'MODE=netserver'
+#   when: "'group_ups_server' in group_names"
+# - name: Run scan of ups usb and set ups configuration
+#   shell: "nut-scanner -U > /etc/ups/ups.conf"
+#   when: "'group_ups_server' in group_names"
+
+# # UPS_SERVER: Set server to listen to mgmt interface for nut clients https://stackoverflow.com/questions/29075287/ansible-insert-line-if-not-exists
+# - name: Check if ups mgmt host is already defined
+#   lineinfile:
+#     state: absent
+#     path: "/etc/ups/upsd.conf"
+#     regexp: "^LISTEN {{ ansible_default_ipv4.address }}"
+#   check_mode: true
+#   changed_when: false 
+#   register: check_mgmt
+#   when: "'group_ups_server' in group_names"
+# - name: Check if ups loopback host is already defined
+#   lineinfile:
+#     state: absent
+#     path: "/etc/ups/upsd.conf"
+#     regexp: "^LISTEN 127.0.0.1"
+#   check_mode: true
+#   changed_when: false 
+#   register: check_loop
+#   when: "'group_ups_server' in group_names"
+# - name: Define ups mgmt ip for listening
+#   lineinfile:
+#     state: present
+#     path: "/etc/ups/upsd.conf"
+#     line: "LISTEN {{ ansible_default_ipv4.address }}"
+#   when: 
+#     - check_mgmt.found == 0
+#     - "'group_ups_server' in group_names"
+# - name: Define ups loopback for listening
+#   lineinfile:
+#     state: present
+#     path: "/etc/ups/upsd.conf"
+#     line: "LISTEN 127.0.0.1"
+#   when: 
+#     - check_loop.found == 0
+#     - "'group_ups_server' in group_names"
+
+# # UPS_SERVER: Set server and client accounts for services based on copy of file /roles/hci_cluster/files/upsd.users
+# - name: Copy a version of upsd.users that defines client and server side account use for clien  servers
+#   ansible.builtin.copy:
+#     src: upsd.users
+#     dest: /etc/ups/upsd.users
+#     group: nut
+#     setype: named_conf_t
+#     mode: 0640
+# - lineinfile:  # Replace placeholder string password with vault variable "{{vault_nut_ssh_password}}"
+#     path: /etc/ups/upsd.users
+#     regexp: '{{item.From}}'
+#     line: '{{item.To}}'
+#   with_items:
+#          - { From: 'password = vault_nut_ssh_password', To: "MODE={{ vault_nut_ssh_password }}" }
+#          - { From: 'password = vault_nutmonitor_ssh_password', To: "MODE={{ vault_nutmonitor_ssh_password }}" }
+#   when: "'group_ups_server' in group_names"
+
+# # UPS_SERVER: Set server ups monitoring settings /roles/hci_cluster/files/upsmon.conf
+# - name: Copy a version of upsmon.conf that defines ups monitoring settings
+#   ansible.builtin.copy:
+#     src: upsmon.conf
+#     dest: /etc/ups/upsmon.conf
+#     group: nut
+#     setype: named_conf_t
+#     mode: 0640
+#   when: "'group_ups_server' in group_names"
+# - lineinfile:  # Replace placeholder string password with vault variable "{{vault_nut_ssh_password}}"
+#     path: /etc/ups/upsmon.conf
+#     regexp: 'MONITOR nutmonitor@localhost 1 ansible_default_ipv4_address vault_nutmonitor_ssh_password master'
+#     line: 'MONITOR nutmonitor@localhost 1 {{ ansible_default_ipv4.address }} {{ vault_nutmonitor_ssh_password }} master'
+#   when: "'group_ups_server' in group_names"
+
+
+
+# ##
+# ##  CLIENT SIde UPS
+# # Setup "nutmonitor" user client and server monitoring
+# #  BROKEN:  https://riptutorial.com/ansible/example/12269/when-condition  when in group1 or group 2 fails
+# - name: Add the user 'nutmonitor' with a bash shell, appending the group 'wheel'and generate ssh key for hosts "{{ target_hosts }}"
+#   user:
+#     name: '{{ vault_nutmonitor_ssh }}'
+#     shell: /bin/bash
+#     groups: wheel
+#     state: present
+#     generate_ssh_key: yes
+#     ssh_key_bits: 2048
+#     ssh_key_file: .ssh/id_rsa
+#     createhome: yes
+#     password: "{{ vault_nutmonitor_ssh_password | string | password_hash('sha512') }}"
+#   when: 
+#     - "'group_ups_client' in group_names" #or "'group_ups_server' in group_names"  added below section to just get it done!
+# - name: Add the user 'nutmonitor' with a bash shell, appending the group 'wheel'and generate ssh key for hosts "{{ target_hosts }}"
+#   user:
+#     name: '{{ vault_nutmonitor_ssh }}'
+#     shell: /bin/bash
+#     groups: wheel
+#     state: present
+#     generate_ssh_key: yes
+#     ssh_key_bits: 2048
+#     ssh_key_file: .ssh/id_rsa
+#     createhome: yes
+#     password: "{{ vault_nutmonitor_ssh_password | string | password_hash('sha512') }}"
+#   when: "'group_ups_server' in group_names"
+
+# # set client /etc/ups/nut.conf for client
+# - lineinfile:  # Set ups host state to server
+#     path: /etc/ups/nut.conf
+#     regexp: '^MODE='
+#     line: 'MODE=netclient'
+#   when: "'group_ups_client' in group_names"
+# #  For UPS client set /etc/ups/upsmon.conf  set monitor target server and password based on master UPS server
+# ## Broken: not sure easy way to check on master UPS for slave client. Need logic of multiple check:when group=ups_client and ups var = ups1 then set thor
+# ## Broken: for now it just slaves everyone under thor
+# - lineinfile:  # Replace placeholder string password with vault variable "{{vault_nut_ssh_password}}"
+#     path: /etc/ups/upsmon.conf
+#     regexp: 'MONITOR nutmonitor@localhost 1 ansible_default_ipv4_address vault_nutmonitor_ssh_password master'
+#     line: 'MONITOR nutmonitor@172.16.100.101 1 thor {{ vault_nutmonitor_ssh_password }} master'
+#   when: "'group_ups_client' in group_names"
+
+
+# # PDU association for APC master PDU and its control to reset and or power off / restart
+
+
+# Installation of thermal monitoring software on HCI nodes which will collect data, trigger actions and make changes based on thermal response
+# Manual downloads for RHEV 4.5 needed so saved in git repo as binary.
+# Packages download manual: lm_sensors-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm  https://access.redhat.com/downloads/content/rhel---8/x86_64/7416/lm_sensors/3.4.0-21.20180522git70f7e08.el8/x86_64/fd431d51/package
+#  yum localinstall lm_sensors-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm  # WORKS!!
+- name: Copy over lmsensor RHEL 8 based yum package to RHEV host 
+  ansible.builtin.copy:
+    src: lm_sensors-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm
+    dest: /tmp/lm_sensors-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm
+- name: Copy over lmsensor libs RHEL 8 based yum package to RHEV host 
+  ansible.builtin.copy:
+    src: lm_sensors-libs-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm
+    dest: /tmp/lm_sensors-libs-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm
+- name: install sensors libs tools for thermals
+  shell: yum localinstall /tmp/lm_sensors-libs-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm -y
+- name: install sensors tools for thermals
+  shell: yum localinstall /tmp/lm_sensors-3.4.0-22.20180522git70f7e08.el8.x86_64.rpm -y
+  #become: true
+# - name: Copy a version of upsmon.conf that defines ups monitoring settings ## Note this shell script has issues and needs fixing 20210215
+#   ansible.builtin.copy:
+#     src: thermal.cron
+#     dest: /etc/cron.hourly/thermal.cron
+#     group: root
+#     setype: named_conf_t
+#     mode: 0750

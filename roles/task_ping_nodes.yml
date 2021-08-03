@@ -1,0 +1,15 @@
+---
+# This role validates is just test call via ssh passwordless logging
+# v1.0 20210218
+# file: /roles/task_ping_nodes.yml
+# Ex Calling direct ad-hock: ansible-playbook ./roles/task_ping_nodes.yml --extra-vars "target_hosts=hci_hosts"  
+
+# - name: Ansible Pinging Host which validates SSH passwordless login. If this is run as role un-remark this section
+#   hosts: "{{ target_hosts }}"
+#   gather_facts: false
+#   become: false
+#   tasks:
+- name: ssh password login via ansible to hosts
+  action: ping
+- debug: # this only  runs for those hosts above which complete action
+    msg: "{{ ansible_host }}"

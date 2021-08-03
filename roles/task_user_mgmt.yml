@@ -1,0 +1,19 @@
+---
+# This task creates local users that may be needed to run tasks that cannot/should not be done as root
+# v1.0 20210208
+# file: /roles/task_user_mgmt.yml
+
+# # Below is means to echo back password variable on ansible console to see if password is correct
+# - debug:
+#         msg: "{{ vault_cluster_ssh_password }}"
+- name: Add the user 'cluster' with a bash shell, appending the group 'wheel'and generate ssh key for hosts "{{ target_hosts }}"
+  user:
+    name: '{{ vault_cluster_ssh }}'
+    shell: /bin/bash
+    groups: wheel
+    state: present
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+    createhome: yes
+    password: "{{ vault_cluster_ssh_password | string | password_hash('sha512') }}"

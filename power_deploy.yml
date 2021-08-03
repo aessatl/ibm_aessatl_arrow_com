@@ -1,0 +1,25 @@
+---
+# Master deployment playbook for HCI cluster. This parses /hci_deploy/tasks/main.yml
+# v1.0 20210719
+# file: /vmware_hci_deploy.yml
+# Prerequisits:
+# 1) Base Nodes expected to have:  
+#   - OS installed "minimal" VMware-VMvisor-Installer-7.0U2a-17867351.x86_64
+#   - IP set to mgmt interface
+#   - set SSH key generated for root
+#   - user created "ansible" with sudo rights
+# 2) Deploy vCenter appliance:  vcenter.penguinpages.local  172.16.100.31 to vSAN with first drive cache SSD and 1TB for data
+# 3) Two Networks setup and node communication between nodes, with internet access on mgmnt interface
+# 4) Ansible from bastion system to have ssh-passwordless login to all nodes in HCI cluster... <<< this needs to be setup as seperate pre-flight loop I think >>>
+# How to use this file: Ex: ansible-playbook hci_deploy.yml --limit  or to limit to one node  ansible-playbook hci_deploy.yml --limit thor
+
+# Deployment Target systems defined
+- name: Ansible Pinging Host which validates SSH passwordless login
+  hosts: hci_hosts
+  #gather_facts: false
+  become: false
+
+####### Deployment Section #############
+# Runs role of building cluster. Below calls default path to parse into named folder below and finds file /roles/hci_cluster/tasks/main.yml 
+  roles: 
+    - hci_cluster

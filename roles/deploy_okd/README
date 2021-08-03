@@ -1,0 +1,4 @@
+# This folder is for files and scripts related to OKD HA Cluster. Based on full distribution ability without contracts or support requiments.
+# v0.001 20200103
+# This calls upon two major files /okd for staging (dev/test) and os (production) 
+# Within each folder is inventory.yml file which lists host names in stanzas of groups. 

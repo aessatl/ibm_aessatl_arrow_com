@@ -1,0 +1,8 @@
+---
+# This role validates is just test call with ping and echo
+# v0.001 20210218
+# file: /roles/task_wall_test_nodes.yml
+
+# Ex:ansible-playbook hci_deploy.yml --limit hci_hosts  "This node thor is under ansible control. All your data are belongs to us!"
+- name: This is a test wall to shell on each node
+  command: /usr/bin/wall "This node {{ ansible_host }} is under ansible control. All your data are belongs to us!" 

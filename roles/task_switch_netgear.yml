@@ -1,0 +1,40 @@
+---
+# This role is to setup NetGear Managed switch
+# v0.000 20210131
+# file: /roles/task_switch_netgear.yml
+# This is module for setup of Netgear Managed switch   
+# Broken: I think netgear is fubar
+#  https://docs.ansible.com/ansible/latest/network/user_guide/network_best_practices_2.5.html
+# https://docs.ansible.com/ansible/2.9/modules/list_of_network_modules.html
+
+
+# - name: Collect all facts from the device
+#   community.network.routeros_facts:
+#     gather_subset: all
+
+# - name: Collect only the config and default facts
+#   community.network.routeros_facts:
+#     gather_subset:
+#       - config
+
+
+
+# Name
+
+
+# IP
+
+
+
+# DNS
+
+
+# NTP
+
+# VLAN
+
+
+# Port Configuration
+
+
+

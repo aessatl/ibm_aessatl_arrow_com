@@ -1,0 +1,16 @@
+---
+# Test SSH to host and print kernel version
+- name: perform yum update / reboot server
+  hosts: all
+  remote_user: cluster
+  become: true
+  become_method: sudo
+  become_user: root
+ 
+  tasks:
+# Test SSH to host and print kernel version
+        - name: Perform yum update of all packages
+          yum:
+            name: '*'
+            state: latest
+            

@@ -1,0 +1,70 @@
+---
+# Master playbook to deploy VM or Physical nodes for entire NSPOF OS Cluster in the production environment
+# v0.001  20200116
+# Goal: Complete Cluster Deployment.
+# Import variables and inventory files specific to production environment deployment task(s)
+- hosts: all
+  vars:  # Not sure if I need this as 'extra var' supplied  at command line, is I think kept across entire nested include of playbooks below ??
+    version: {{version}}
+  vars_files:
+    - /group_vars/vars_global.yml # Global vars for environment
+  vars_files:
+    files_matching: inventory_hypervisor_cluster.yml # Inventory and groups related to hypervisor nodes
+    name: hpervisor_nodes
+  vars_files:
+    files_matching: inventory_os_cluster.yml # Inventory and groups related to openshift version 3.11 or 4 version of cluster
+    name: cluster_nodes
+  when: {{version}}=3.11 or {{version}}=4
+  vars_files:
+    files_matching: inventory_okd_cluster.yml # Inventory and groups related to openshift okd version of cluster
+    name: cluster_nodes
+  when: {{version}}=okd
+
+
+
+#################### Pre flight check of site resources ####################
+- include_playbook: /roles/role_site_preflight_check.yml
+- debug:
+  msg: You did not correctly pass valid version option for playbook. Current options are: 3.11, 4, okd  Ex:  {{ version }}
+  when: {{version}} is not defined
+
+# Run deployment playbook based on version and site
+####################  Openshift 3.11 ####################
+  - debug:
+    msg: Deployment starting for production of Openshift {{ version }}
+    when: {{version}}=3.11
+  - include_playbook: /openshift_311/cluster_provision_playbook.yml # Provision VMs or physical resources with OS
+    when: {{version}}=3.11
+  - include_playbook: /openshift_311/cluster_configure_playbook_master_nodes.yml # Take base OS and setup for role as master node
+    when: {{version}}=3.11
+  - include_playbook: /openshift_311/cluster_configure_playbook_infrastructure_nodes.yml # Take base OS and setup for role as infrastructure node
+    when: {{version}}=3.11
+  - include_playbook: /openshift_311/cluster_configure_playbook_etcd_nodes.yml # Take base OS and setup for role as etcd node
+    when: {{version}}=3.11
+  - include_playbook: /openshift_311/cluster_configure_playbook_worker_nodes.yml # Take base OS and setup for role as worker node
+    when: {{version}}=3.11
+  - include_playbook: /roles/role_site_infrastructure_vip.yml # Setup cluster Site VIP for Infrastructure node. Data ingress
+    when: {{version}}=3.11
+  - include_playbook: /roles/role_site_masetr_vip.yml # Setup cluster Site VIP for Managment
+    when: {{version}}=3.11
+  - copy:
+    src: "{{ git_repo_path }}/openshift_311/openshift_deployment.yml"
+    dest: "{{ git_repo_path }}/production/current_deployment.yml"
+  # Run final playbook deployment for Openshift.  Ya.. below is wrong syntax but the logic is what I need
+  - host: {{deploy_node}}
+     run: {{ git_repo_path }}/production/current_deployment.yml
+
+
+
+####################  Openshift 4 ####################
+# ??  Copy above syntax when it is finished and translate to version 4 Openshift playbooks
+
+####################  Openshift OKD ####################
+# ??  Copy above syntax when it is finished and translate to version 4 Openshift playbooks
+
+
+# End of cluster deployment
+print: "End of deployment.  Hopefully it worked for you. If not read file "README_Deployment_Failed"
+# Output of information for next step. Likly to login to web portal to complete setup
+print: "Your next setup is to login to the web portal"
+print: "Read README_POST_Deployment for set of recommended tasks now that cluster is up and working"

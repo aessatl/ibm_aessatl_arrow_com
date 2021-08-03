@@ -1,0 +1,40 @@
+---
+# Task is to import and setup EPEL repo
+# v1.0 20210218
+# file: /roles/task_epel_repo.yml
+
+- name: Clean up RPM Database as ran into cache clean error on EPEL vs other repos
+  command: "{{ item }}"
+  with_items:
+  - yum clean all
+  - dnf clean all
+  - "rm -r /var/cache/dnf"
+
+# # Broken from centos8
+# - name: Import a key from a url
+#   ansible.builtin.rpm_key:
+#     state: present
+#     # key: {{ epel_repo_gpg_key_url }}
+#     # key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8 # CentOS8 worked
+#     key: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm # RHEV 8  <<DRAFT>>
+## Broken on RHEV
+- name: Enable EPEL Repository on CentOS 8 #  dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+  dnf:
+    name: epel-release
+    state: latest
+  become: True
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts ['distribution_major_version'] == '8'
+
+# need to add RHEV third party packages https://access.redhat.com/solutions/3031721
+- name: Install third party package support for RHEV
+  command: yum localinstall package.rpm
+
+# - name: Install EPEL repo
+#   yum:
+#     name: epel-release
+#     state: present
+    
+# - name: Update the EPEL system packages on hosts
+#   yum:
+#     name: epel-release
+#     state: latest

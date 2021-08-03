@@ -1,0 +1,4 @@
+# This folder is for files and scripts related to dev/staging environment
+# v0.001 20200103
+# Valid version variable at this time are "3.11", "4" and "okd". Please provide command in format for example for setting this variable at launch
+# Example way to call deployment for staging for 3.11 version of Openshift from within github root of cluster_devops: 'ansible-playbook /staging/site_deploy.yml --extra-vars '{"version":"3.11"}'

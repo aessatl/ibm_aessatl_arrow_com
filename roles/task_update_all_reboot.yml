@@ -1,0 +1,35 @@
+---
+# This task simply runs full update and reboot if needed.
+# v1.0 20210218
+# file: /rols/task_update_all_reboot.yml
+
+- name: install yum-utils which gives ability to check if reboot needed
+  yum:
+    name: 
+    - yum-utils
+    state: latest
+  become: true
+- name: Update the system packages on hosts "{{ target_hosts }}"
+  yum:
+    name: "*"
+    state: latest
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: latest
+
+- name: Check to see if we need a reboot
+  command: needs-restarting -r
+  register: result
+  ignore_errors: yes
+
+- name: Display result of reboot is required yes (exit code 1) or no (exit code 0)
+  debug:
+    var: result.rc
+
+- name: Reboot Server if Necessary
+  command: shutdown -r now "Ansible Updates Triggered"
+  become: true
+  async: 30
+  poll: 0
+  when: result.rc == 1

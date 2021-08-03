@@ -1,0 +1,36 @@
+# This task to take a pair of VMs and on thm deploy IDM HA cluster so they can host site, ldap auth modules and binds to IDM cluster LDAP and Kerberos
+# v0.1 20210218
+# Centos this is called "IPA/IDM"
+# Documentation: https://github.com/freeipa/ansible-freeipa/blob/master/roles/ipaserver/README.md 
+# This IDM cluster for nodes ns01, ns02 for domain "penguinpages.local"
+# Documentation: https://github.com/freeipa/ansible-freeipa
+# file: /roles/role_idm_server.yml 
+# <<<<<<<<<DRAFT>>>>>>>>>>>
+
+- name: Deploy IDM HA cluster
+  hosts: "{{ target_hosts }}"
+  gather_facts: false
+  become: false
+  tasks:
+	- name: install ipa
+		yum:
+	   	name: ipa-server ipa-server-dns
+	   	state: latest
+
+	- name: restart ipa-server
+	 service:
+	    name: ipa
+	    state: restartd
+
+##
+[idmserver]
+group_idm
+
+[ipaserver:vars]
+ipaserver_domain=penguinpages.local
+ipaserver_realm=penguinpages.local
+ipaserver_setup_dns=yes
+ipaserver_auto_forwarders=yes
+
+
+

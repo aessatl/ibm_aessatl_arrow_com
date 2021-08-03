@@ -1,0 +1,17 @@
+---
+# Deployment of IPLB components and establish application forwarding rules via IPLB. to different services in lab
+# v0.001  20210218
+# file: /roles/task_iplb_intranet.yml 
+# <<<<<<<<<DRAFT>>>>>>>>>>>
+
+# Setup VM base OS settings
+
+
+# Setup HA Proxy services
+
+# Setup PaceMaker 
+
+
+# Setup Forwarding rules
+
+

@@ -1,0 +1,17 @@
+---
+# This role enables SELinux on each node 
+# v1.0 20210222
+# file: /roles/task_selinux_disable.yml
+
+- name: SELinux enabled on hosts
+  selinux:
+    policy: targeted
+    state: enforcing
+- name: Set SELinux Disable
+  shell: setenforce enforcing
+
+# DRAFT::Set what is end state of SELinux for hosts
+# - name: Set up port customizations
+#   shell: |
+#     semanage port -D
+#     semanage port -a -t ovirt_vmconsole_host_port_t -r 's0' -p tcp 2223

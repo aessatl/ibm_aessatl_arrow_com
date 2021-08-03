@@ -1,0 +1,31 @@
+# Version: 20210213
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+# Cluster node thor
+172.16.100.91   thorm.penguinpages.local thorm
+172.16.100.101  thor.penguinpages.local thor
+172.16.101.101  thorst.penguinpages.local thorst
+
+# Cluster node odin
+172.16.100.92   odinm.penguinpages.local odinm
+172.16.100.102  odin.penguinpages.local odin
+172.16.101.102  odinst.penguinpages.local odinst
+
+# Cluster node medusa
+172.16.100.93   medusam.penguinpages.local medusam
+172.16.100.103  medusa.penguinpages.local medusa
+172.16.101.103  medusast.penguinpages.local medusast
+
+# Cluster node eir
+172.16.100.94   eirm.penguinpages.local eirm
+172.16.100.104  eir.penguinpages.local eir
+172.16.101.105  eir.penguinpages.local eirst
+
+# oVirt Envionment
+172.16.100.31 ovirt01.penguinpages.local ovirt01
+
+# IDM nodes
+172.16.100.40   ns00.penguinpages.local ns00
+172.16.100.41   ns01.penguinpages.local ns01
+172.16.100.42   ns02.penguinpages.local ns02

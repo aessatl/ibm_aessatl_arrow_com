@@ -1,0 +1,32 @@
+# Ugly script to get all hci hosts to have passwordless login
+# Version: 20210501
+rm -rf /root/hci_nodes
+cat << EOF >> /root/hci_nodes
+172.16.100.101
+thor.penguinpages.local
+thor
+172.16.101.101
+thorst.penguinpages.local
+thorst
+172.16.100.102
+odin.penguinpages.local
+odin
+172.16.101.102
+odinst.penguinpages.local
+odinst
+172.16.100.103
+medusa.penguinpages.local
+medusa
+172.16.101.103
+medusast.penguinpages.local
+medusast
+EOF
+
+# Script to copy SSH keys from all nodes in cluster
+# version 0.5  2021-05-01
+# odd issue that fqdn breaks the below command
+for vm in $(cat /root/hci_nodes)
+do
+ssh-keyscan -H "$vm" >> ~/.ssh/known_hosts
+sshpass -p 1q2w3e4r ssh-copy-id "$vm"
+done

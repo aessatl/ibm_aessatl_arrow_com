@@ -1,0 +1,48 @@
+# This folder is for vault.  This stores passwords and encryption sensitve files
+# v0.001 20210203
+# Documentation on using vault passwords with playbooks
+# https://docs.ansible.com/ansible/latest/user_guide/vault.html#vault
+# For example, to use a password file user "ansible" you can create file /group_vars/vault/vault_ansible 
+# In that file is one line... the password:  Ex:  cat /group_vars/vault/vault_ansible   -->  my_password
+
+# Encrypt file for later call and use ansible-vault encrypt vault_ansible    You will have to supply vault password
+# ansible@LT-A0070501:/mnt/c/GitHub/penguinpages_cluster_devops/cluster_devops/group_vars/vault$ ansible-vault encrypt vault_hypervisor
+# New Vault password: 
+# Confirm New Vault password: 
+# Encryption successful
+
+
+
+# How to now call each of the files for user and password as variables from within other playbooks.  But file has to have file in clear text :(
+# ansible-playbook -i /group_vars/vars/inventory_iplb_servers.yml --vault-password-file=/group_vars/vault/vault_password.txt
+
+# How to call when using vault password set from bastion node / ansible node shell. So vault password is "outside git repo as clear txt" 
+# https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data-on-ubuntu-16-04 
+# Ansible then can use vault password Ex:
+#?
+#?
+#?
+#?
+
+########### Single global Vault file format notes  ############
+#### OLD: Not prefered as one file will have all passwords and users. And to change one means exposting all and also locking all from use by playbooks 
+#### MASTER VAULT variables are in format within each file of:
+user_(name of group):  <username>
+password_(name of group): "<password>"
+
+Ex: /group_vars/vault/vault_root
+user_root: root
+password_root: blah
+
+# So variable within playbook for root user would be 
+# {{user_root}}
+# And varible for password would be 
+# {{password_root}}
+# 
+
+
+### Some credentials such as cloud have key and secret which would be then:
+user_(name of group): <username>
+password_(name of group): "<password>"
+access_key_(name of group): "<Access key ID>"
+access_secret_(name of group): "<Secret access key>"

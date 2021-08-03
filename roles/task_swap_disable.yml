@@ -1,0 +1,16 @@
+---
+# This role disables swap on the host as well as removes from active state upon reboot
+# v1.0 20210215
+# file: /roles/task_swap_disable.yml
+# Suppisingly large amount of garbage for this task.  Found good option here https://github.com/djx339/ansible-role-swapoff/blob/master/tasks/main.yml
+
+
+- name: Disable swapoff
+  shell: swapoff -a
+
+- name: Disable swapoff permanently
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes

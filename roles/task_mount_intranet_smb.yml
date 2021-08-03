@@ -1,0 +1,92 @@
+---
+# Description: General intranet wide mount of CIFS share for common use
+# v1.0 20210208
+# file: /roles/task_mount_intranet_smb.yml
+# Goal to mount two usb drives on Samba Server "sw2" to allow moving files from windows hosts.  Issue is it supports only smbv1 and user auth in file.
+# Based on https://stackoverflow.com/questions/29899186/how-do-you-provide-domain-credentials-to-ansibles-mount-module/47297910
+# Error: Meh.. it works fine...no error..but due to unmount and remount locks.. gets error if replayed later on.
+
+# RHEV does not have packages in channel so manual download
+- name: Copy over RHEL 8 based yum package to RHEV host for CIFS client
+  ansible.builtin.copy:
+    src: cifs-utils-6.8-3.el8.x86_64.rpm
+    dest: /tmp/cifs-utils-6.8-3.el8.x86_64.rpm
+
+- name: Install CIFS client for SMB mounts
+  shell: yum install /tmp/cifs-utils-6.8-3.el8.x86_64.rpm -y
+  
+# # Broken as this was for CentOS
+# - name: install samba client and tools
+#   yum:
+#     name: 
+#     #- samba-client
+#     - cifs-utils
+#     state: latest
+#   become: true
+
+- name: Create credential file (used for fstab entry)
+  copy:
+    dest: /etc/samba/user
+    content: |
+     username=admin
+     password={{ vault_admin_smb_password }}
+    mode: 0600
+    remote_src: yes  # Remove file if exists to make sure clean
+  become: true
+# - name: Create Folder sw2_backup  ###### Not needed as mount module creates folders if not present
+#   file: 
+#     path: /media/sw2_backup
+#     owner: root 
+#     group: root 
+#     mode: 0774
+#     state: directory
+#   become: true
+# - name: Create Folder sw2_movies
+#   file: 
+#     path: /media/sw2_movies
+#     owner: root 
+#     group: root 
+#     mode: 0774
+#     state: directory
+#   become: true
+- name: Add mount sw2_backup share to fstab
+  mount:
+    name: /media/sw2_backup
+    src: //172.16.100.1/backup
+    opts: "credentials=/etc/samba/user,vers=1.0,_netdev"
+    fstype: cifs
+    state: mounted
+  become: true
+- name: Add mount sw2_movies share to fstab
+  mount:
+    name: /media/sw2_movies
+    src: //172.16.100.1/movies
+    opts: "credentials=/etc/samba/user,vers=1.0,_netdev"
+    fstype: cifs
+    state: mounted
+  become: true
+
+# - command: mountpoint -q {{myvolume}} # Test is volume mounted and if so.. don't run mount command
+#   register: volume_stat
+#   failed_when: False
+#   changed_when: False
+
+# - debug:
+#     msg: "This is a mountpoint!"
+#   when: volume_stat.rc == 0
+
+##########Test:Check if file system mounted  https://stackoverflow.com/questions/42353910/ansible-check-if-drive-is-mounted
+# - name: Check if drive sw2_backup  are already mounted
+#   shell: df | grep "{{item.drive}}" | wc -l
+#   with_items: "{{/media/sw2_backup}}"
+#   register: sw2_backup_checked
+
+# - name: output debug sw2_backup_checked mounted
+#   debug: var=sw2_backup_checked
+
+# - name: Make filesystem
+#   filesystem:
+#     fstype: xfs
+#     dev: "{{item.item.drive}}"
+#   when: "{{item.stdout}} == 0"
+#   with_items: ebs_checked.results

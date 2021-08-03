@@ -1,0 +1,23 @@
+---
+# This role installs ldap auth client modules and binds to IDM cluster LDAP and Kerberos. Goal is clients using LDAP auth.
+# v0.1 20210131
+# Documentation: https://github.com/freeipa/ansible-freeipa
+# file: /roles/task_auth_ldap.yml 
+# <<<<<<<<<DRAFT>>>>>>>>>>>
+
+- name: Ansible Pinging Host which validates SSH passwordless login
+  hosts: "{{ target_hosts }}"
+  gather_facts: false
+  become: false
+  tasks:
+	- name: install ldap and kerberos client
+	yum:
+	   name: ipa-client
+	   state: latest
+
+	- name: restart ipa-client
+	 service:
+	    name: ipa
+	    state: restartd
+
+

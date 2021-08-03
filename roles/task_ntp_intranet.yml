@@ -1,0 +1,27 @@
+# This role set time sync of clients. 
+# v0.1 20210218
+# file: /rols/task_ntp_intranet.yml
+
+- name: Install chrony and ntpstat
+  yum:
+    name: 
+    - chrony
+    - ntpstat
+    state: latest
+  become: true
+- name: set timezone to America/New_York
+  timezone:
+    name: America/New_York
+- name: Make sure Chrony is started up
+  ansible.builtin.service:
+    name: chronyd
+    state: started
+# - name: Check to see time is in sync
+#  Broken on response but low priority
+#   command: timedatectl |grep "System clock synchronized:"
+#   register: sync_status
+#   ignore_errors: yes
+
+# - name: Display if in sync
+#   debug:
+#     var: sync_status

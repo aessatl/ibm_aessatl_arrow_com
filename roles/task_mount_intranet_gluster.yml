@@ -1,0 +1,96 @@
+---
+# General intranet wide mount of GLUSTER share for common use. Goal to mount as needed gluster to hosts for common file use
+# v0.002 20210224
+# Each host will have optimal mount strucure of "itself first" then other nodes within gluster. Not sure how to do this yet
+# Not sure how to build below playbook to mount and get options in /etc/fstab like below example
+# medusast.penguinpages.local:/data on /media/data type fuse.glusterfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=131072,_netdev)
+# medusast.penguinpages.local:/engine on /media/engine type fuse.glusterfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=131072,_netdev)
+# medusast.penguinpages.local:/vmstore on /media/vmstore type fuse.glusterfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=131072,_netdev)
+# medusast.penguinpages.local:/gv0 on /media/gv0 type fuse.glusterfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=131072,_netdev)
+# file: /roles/task_mount_intranet_gluster.yml
+# Working but needs feature:  Detect which host is runnint task.. set primary mount to local host and secondary to next in "gluster" list.
+ 
+- name: Create Folder /media/data
+  file: 
+    path: /media/data
+    owner: root 
+    group: root 
+    mode: 0775 
+    state: directory
+- name: Create Folder /media/engine
+  file: 
+    path: /media/engine
+    owner: root 
+    group: root 
+    mode: 0775 
+    state: directory
+- name: Create Folder /media/gv0
+  file: 
+    path: /media/gv0
+    owner: root 
+    group: root 
+    mode: 0775 
+    state: directory
+- name: Create Folder /media/vmstore
+  file: 
+    path: /media/vmstore
+    owner: root 
+    group: root 
+    mode: 0775 
+    state: directory
+
+### install gluster clent
+
+### mount gluster volumes and add to fstab
+# This would be nice if it did some form of round robin on which were primary for mount so it did not overload one system 
+
+# # Gluster volume configuration.
+# - name: Check if Gluster volumes already exist.
+# shell: "gluster volume info"
+# changed_when: false
+# register: gluster_volume_info
+
+# Install gluster client
+- name: install gluster client and tools
+  yum:
+    name: 
+    - glusterfs-client
+    - centos-release-gluster
+    state: latest
+  become: true
+
+- name: Add mount gluster volume for data with primary on local host and secondary 
+  mount:
+    name: /media/data
+    src: odinst.penguinpages.local:/data
+    opts: "defaults,backupvolfile-server=medusast.penguinpages.local:thorst.penguinpages.local,_netdev,log-level=WARNING,log-file=/var/log/gluster_data.log"
+    fstype: glusterfs
+    state: mounted
+  become: true
+
+- name: Add mount gluster volume for engine with primary on local host and secondary 
+  mount:
+    name: /media/engine
+    src: odinst.penguinpages.local:/engine
+    opts: "defaults,backupvolfile-server=medusast.penguinpages.local:thorst.penguinpages.local,_netdev,log-level=WARNING,log-file=/var/log/gluster_engine.log"
+    fstype: glusterfs
+    state: mounted
+  become: true
+
+- name: Add mount gluster volume for gv0 with primary on local host and secondary 
+  mount:
+    name: /media/gv0
+    src: odinst.penguinpages.local:/gv0
+    opts: "defaults,backupvolfile-server=medusast.penguinpages.local:thorst.penguinpages.local,_netdev,log-level=WARNING,log-file=/var/log/gluster_gv0.log"
+    fstype: glusterfs
+    state: mounted
+  become: true
+
+- name: Add mount gluster volume for vmstore with primary on local host and secondary 
+  mount:
+    name: /media/vmstore
+    src: odinst.penguinpages.local:/vmstore
+    opts: "defaults,backupvolfile-server=medusast.penguinpages.local:thorst.penguinpages.local,_netdev,log-level=WARNING,log-file=/var/log/gluster_vmstore.log"
+    fstype: glusterfs
+    state: mounted
+  become: true

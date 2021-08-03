@@ -1,0 +1,19 @@
+---
+# This role runs basic test of environment for Openshift Deployment based on supplied variable cluster name.  Ex: os01
+# v0.001 20210218
+# file: /roles/task_openshift_preflight_check.yml 
+# <<<<<<<<<DRAFT>>>>>>>>>>>
+
+# Check DNS
+
+
+# Check bastion node
+
+
+
+# Test disk environment
+
+
+# Test Network
+
+

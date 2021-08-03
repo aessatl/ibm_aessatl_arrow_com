@@ -1,0 +1,61 @@
+---
+# This is module for setup of nodes which need their disk excluded from Multipath tables for services such as gluster
+# v0.01 20210314
+# file: /roles/task_mpio_exclude.yml
+
+# Goal: /etc/multipath.conf
+# Change 
+
+# blacklist {
+#     protocol "(scsi:adt|scsi:sbp)"
+# }
+
+# To:
+# }
+# blacklist {
+#         devnode "^sd[a-z]"
+#         wwid Samsung_SSD_850_PRO_512GB_S250NXAGA15787L
+#         wwid WDC_WDS100T2B0B-00YS70_19106A802926
+#         wwid WDC_WDS100T2B0B-00YS70_192490801828
+#         protocol "(scsi:adt|scsi:sbp)"
+# }
+# # with variables 
+#     hosts:
+#         thor:
+#           mgmt_nic: enp8s0f0 # Set in Kickstart OS install
+#           storage_nic: ens15f0
+#           ovs_nic: enp8s0f1
+#           storage_ip: 172.16.101.101
+#           ovirt_disk: ata-Samsung_SSD_850_PRO_512GB_S250NXAGA15787L # ls -al /dev/disk/by-id/ |grep sdb 
+#           data00_disk: WDC_WDS100T2B0B-00YS70_192490801828 # ls -al /dev/disk/by-id/ |grep sdc ##But VDO needs mapper device for gpt so /dev/mapper/
+#           data01_disk: WDC_WDS100T2B0B-00YS70_19106A802926 # ls -al /dev/disk/by-id/ |grep sdd ##But VDO needs mapper device for gpt so /dev/mapper/
+
+# # Insert before protocol disk for ovirt
+# - name: Add local ovirt disk to exclusion list
+#   lineinfile:
+#       path: /etc/multipath.conf
+#       regexp: '    protocol "(scsi:adt|scsi:sbp)"'
+#       insertbefore: '    protocol "(scsi:adt|scsi:sbp)"'
+#       line: '       wwid {{ ovirt_disk }}'
+#       state: present
+#       backup: yes
+
+# Insert three drives for each host into multipath exclusion  https://www.mydailytutorials.com/ansible-replace-example/ 
+# - name: Ansible replace with multipath disk
+#   replace:
+#     path: /etc/multipath.conf
+#     regexp: 'protocol "(scsi:adt|scsi:sbp)"'
+#     replace: "{{ item }}"
+#   with_items:
+#   - 'wwid {{ data01_disk }}'
+#   - 'wwid {{ data00_disk }}'
+#   - 'wwid {{ ovirt_disk }}'
+#   - 'protocol "(scsi:adt|scsi:sbp)"'
+
+# Insert three drives from template file https://stackoverflow.com/questions/33768690/is-it-possible-to-use-inline-templates/33783423
+- name: Insert blacklist of host disk template to the file
+  lineinfile:
+    path: /etc/multipath.conf
+    insertbefore: 'protocol "(scsi:adt|scsi:sbp)"'
+    line: "{{ lookup('template', 'multipath_blacklist') }}"
+    backup: yes

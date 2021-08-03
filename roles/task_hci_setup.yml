@@ -1,0 +1,128 @@
+---
+# This task takes nodes prepaired and deploys cockpit, ovirt deployment and scripts cluster initilization. ONLY RUN THIS ON FIRST NODE OF CLUSTER
+# v0.001 20210222
+# file: /roles/task_hci_setup.yml
+# Documentation
+# Overview: https://www.ovirt.org/documentation/gluster-hyperconverged/chap-Deploying_Hyperconverged.html
+
+- name: Check if rpm ovirt-release44 is already installed
+  yum:
+    list: ovirt-release44
+  register: yum_list
+- name: Conditionally do next thing
+  debug:
+    msg: "ovirt-release44 Not installed"
+  when: yum_list.results | selectattr("yumstate", "match", "installed") | list | length == 0
+
+# Add oVirt Repo manual.
+- name: Download oVirt Repo RPM
+  get_url:
+     url: https://resources.ovirt.org/pub/yum-repo/ovirt-release44.rpm
+     dest: ~/ovirt-release44.rpm
+     mode: '0440'
+  when: yum_list.results | selectattr("yumstate", "match", "installed") | list | length == 0
+ 
+- name: Install Python3 as this is needed for oVirt.
+  yum:
+    name: 
+    - python3
+    state: latest
+  become: true
+
+- name: For some reason install of oVirt Repo fails as package so have to run as shell
+  command: "rpm -ivh ~/ovirt-release44.rpm"
+  when: yum_list.results | selectattr("yumstate", "match", "installed") | list | length == 0
+
+- name: With new oVirt repo.. install rest of HCI dependancies
+  yum:
+    name: 
+    - cockpit-ovirt-dashboard
+    - gluster-ansible-roles 
+    - vdsm-gluster
+    - ovirt-host
+    - ovirt-ansible-roles
+    - ovirt-ansible-infra
+    state: latest
+  become: true
+
+
+
+# Set variable for first node in cluster list to set as ignition master  Maybe this needs ovirt-hosted-engine-setup
+- name: Only on first node thor deploy ovirt-engine-appliance
+  yum:
+    name:
+    - ovirt-engine-appliance
+    state: latest
+  become: true
+  when: "'{{ hci_ignition_node }}' in inventory_hostname"
+
+# on local ansible host install galaxy modules
+# Broken: I need a means to check if installed. If so .. don't install again.
+# - name: Install Galaxy Modules on local ansible host
+#   local_action:
+#     module: shell
+#     _raw_params: ansible-galaxy install oVirt.ovirt-ansible-roles
+#   # when: <check for something to show galaxy installed module
+
+- name: Start cockpit service
+  service:
+    name=cockpit
+    state=started
+    enabled=yes
+  when: "'{{ hci_ignition_node }}' in inventory_hostname"
+
+################################
+####### HCI Deploy #############
+################################
+## As of now this is GUI deployment for first engine which is thor.   https://172.16.100.101:9090/ovirt-dashboard#/he
+################################
+####### HCI Deploy #############
+################################
+# https://www.openvirtualization.pro/rhv-ovirt-ansible-getting-started/
+# - name: Create VM on RHV
+#   hosts: localhost
+#   connection: local
+#   gather_facts: false
+
+#   vars_files:
+#     - rhv_vars.yml
+#     - password.yml
+
+#   pre_tasks:
+#     - name: Login to oVirt
+#       ovirt_auth:
+#         hostname: "{{ rhvm_fqdn }}"
+#         username: "{{ rhvm_user }}"
+#         password: "{{ rhvm_password }}"
+#         ca_file: "{{ rhvm_cafile | default(omit) }}"
+#         insecure: "{{ rhvm_insecure | default(true) }}"
+#       tags:
+#         - always
+
+#   vars:
+#     datacenter: datacenter
+#     cluster: cluster
+#     template: rhel7-template
+#     vm_memory: 1GiB
+#     vm_name: test-vm01
+
+
+#   tasks:
+#   - name: Create and run VM from template
+#     ovirt_vms:
+#      auth: "{{ ovirt_auth }}"
+#       name: "{{ vm_name }}"
+#       template: "{{ template }}"
+#       cluster: "{{ cluster }}"
+#       memory: "{{vm_memory}}"
+#       high_availability: true
+#       state: present
+#       wait: yes
+
+#   post_tasks:
+#     - name: Logout from oVirt
+#       ovirt_auth:
+#         state: absent
+#         ovirt_auth: "{{ ovirt_auth }}"
+#      tags:
+#        - always
