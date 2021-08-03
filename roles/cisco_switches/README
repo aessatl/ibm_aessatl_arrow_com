@@ -1,0 +1,5 @@
+# This folder is for files and scripts related to OCP environments
+# v0.001 20210129
+# This folder reflects playbook and resources to bootstrap physical hosts and resources up to where an HCI NSPOF cluster is fully functional
+# Resources expected:  3 x Intel nodes with each having disk drives:  /sda OS boot  /sdb [vdo+gluster] <engine> <data> <vmstore> /sdc [vdo+gluster] <gv0> /sdd [vdo+ceph]<gv1>
+# VLANs 100 for mgmt and VM communication  VLAN 101 for dedicated storage replication and data transfer

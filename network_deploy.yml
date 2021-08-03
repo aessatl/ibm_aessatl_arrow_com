@@ -1,22 +1,34 @@
 ---
-# Deployment of oVirt environment for cluster on top of HCI gluster supported cluster deployment
+# Deployment of ibm ethernet switch environment 
 # v0.001 20210302
 # file: /ovirt_deploy.yml
 # Prerequisits:
-# 1) Base Nodes three node cluster for HCI with ovirt volumes under gluster: engine, data, vmstore 
-# 2) Host to have DNS resolution for short DNS names of three nodes
-# 3) Deploy template vm from cloud image of centos 8 streams.
-# 4) Deploy test VM.
-# How to use this file: Ex: ansible-playbook hci_deploy.yml --limit  or to limit to one node  ansible-playbook hci_deploy.yml --limit thor
+# 1) Mellanox Switches with dedicated Mgmt IP
+# 2) user "ansible" with elevation privilage set.
+# How to use this file: Ex: ansible-playbook network_deploy.yml --limit  or to limit to one node  ansible-playbook hci_deploy.yml --limit thor
 
 # Deployment Target systems defined
-- name: Ansible Pinging Host which validates SSH passwordless login
-  hosts: ovirt_engine
+- name: Ansible Pinging switches which validates SSH passwordless login
+  hosts: group_switches
   #gather_facts: false
   become: false
 
-####### Deployment Section #############
-
-# Once hci cluster is built ovirt01 needs things done for it
+# ####### Deployment Section #############
+# Deployment of CISCO 10Gb Nexus 5k with Nexus 2k leaf switches
   roles: 
-    - ovirt
+    - cisco_switches
+
+# # Deployment of Mellanox 25/100Gb switches based on cumulus NOS 
+#   roles: 
+#     - mellanox_switches
+
+# # Deployment of BNT 1Gb switches based on ?? NOS 
+#   roles: 
+#     - 1gb_switches
+
+# # Deployment of Brocade VDX switches
+#   roles: 
+#     - group_vdx
+
+
+

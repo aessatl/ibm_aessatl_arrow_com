@@ -1,0 +1,177 @@
+# ---
+# # This file is a list of tasks for building via IaC CISCO Nexus Fabric for ibm.aessatl.arrow.com
+# # v1.0000 20210803
+# # File: /roles/cisco_switches/tasks/main.yml
+# # Note: variables from /group_vars/all.yml are automatically consumed and reflect site wide variables
+
+
+########## Preflight Check ###################
+# TASK: SSH Password login test for nodes
+# Working: just shorten up playbook
+- import_tasks: ../../task_ping_nodes.yml
+
+# # Run wall test on each node to see consoles being effected
+# - import_tasks: ../../task_wall_test_nodes.yml
+
+# # Copy over basic hosts file of core infrastructure resolution to ignite cluster
+# - import_tasks: ../../task_network_hosts.yml
+
+# # Common local mounts for file sharing
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_user_mgmt.yml
+
+# # # Common setup of EPEL repostiory for RPMs
+# # # Broken with RHEV 
+# # - import_tasks: ../../task_epel_repo.yml
+
+# # Common setup of RHEL repostiory for RPMs
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_registeration_rhel.yml
+
+# # # Common local mounts for file sharing
+# # # Working: <<<<<<<<<<<commented out because stupid mount errors and that RHEV HCI lacks SAMBA client in subsribtion>>>> << broken..Password???>
+# # - import_tasks: ../../task_mount_intranet_smb.yml
+
+# # Install useful tools for HCI nodes
+# # Working: just shorten up playbook
+# - name: Install tmux package and set default shell launch for user "root"
+#   yum:
+#     name: 
+#     - tmux
+#     - wget
+#     - tar
+#     - net-tools
+#     state: latest
+#   become: true
+
+# # Create basic mount points typically used
+# - name: Create basic mount points typically used
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#     owner: root
+#     group: root
+#     mode: 0775
+#   loop:
+#     - /media/nfs
+#     - /media/smb
+#     - /media/usb
+
+# # # Install power and thermal monitoring
+# # # Broken: shell for collection to smb share. hdd monitoring pending. PDU controlled devices. Testing of shutdown 
+# # # Working: just shorten up playbook
+# # - import_tasks: ../../task_power_thermal_mgmt.yml
+
+# # Disable swap on cluster
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_swap_disable.yml
+
+# # # Setup network details
+# # # Broken: only via hack CLI for storage NIC.
+# # - import_tasks: ../../task_network_hosts.yml
+
+# # # fully update node and reboot
+# # # Working: just shorten up playbook  ## Broken with RHEV
+# # - import_tasks: ../../task_update_all_reboot.yml
+
+# # set ntp client settings
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_ntp_intranet.yml
+
+# # set SELINUX to enabled for HCI needs
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_selinux_enable.yml
+
+# # set disk from nodes that export disk for gluster to excluded
+# # Working: just shorten up playbook
+# - import_tasks: ../../task_mpio_exclude.yml
+
+# # # Enable nodes to complete ssh internal passwordless login
+# # # Working: just shorten up playbook
+# # # FUBAR.. It does not make keys like it should for user. Expected ansible user.. but keeps trying root.. and even then fails.
+# # - import_tasks: ../../task_ssh_passwordless_login.yml
+
+# # # Optional Gluster Server Setup. This stages server to use VDO set bricks. Join to volumes.
+# # # Broken:  Firewall broken. Volumes not clean on process.  Peer probe and not clear
+# # - import_tasks: ../../task_gluster_server.yml
+
+# # # Mount gluster volume.  This is just for clients and if for some reason gluster volumes still exist for engine volume of HCI existing cluster
+# # # Working but needs review: It mounts and sets up volumes but assumes gluster deployed and working for oVirt so this would be post deploy of HCI.
+# # - import_tasks: ../../task_mount_intranet_gluster.yml
+
+# # # # Deploy Cluster
+# # # Broken:  This works to stage up packages.. but final cluster ignite is not working
+# # - import_tasks: ../../task_hci_setup.yml
+
+
+# ################################# Setup Disk ######################
+
+
+
+# # - import_playbook: configure_master_node.yml
+# # - import_playbook: configure_worker_nodes.yml
+
+# # # Create full mesh of hosts to be able to do ssh passwordless login
+# # - task: Enable nodes to have full interchange of ssh passwordless login
+# #    - ansible-bulitin.ping: ping
+
+
+
+# # Network
+
+
+# # role: 
+# #   - {/roles/role_ping_nodes.yml}
+
+# # # set dns context
+# # -task: 
+# #   - name: echo domain variable
+# #       shell: echo {{domain_intranet}}
+
+
+# # Storage
+# # local mounts
+# # role: {/roles/role_vdo_setup.yml}
+# # gluster
+
+
+# # Accounts
+
+# # HCI cluster ignition
+
+# # Validate cluster working
+
+
+# #### Post successful engine deployment Setup steps pre-VM deployment staging 
+# # - https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.4/html/administration_guide/chap-automating_rhv_configuration_using_ansible
+
+# # - Upstream oVirt documentation 
+# #   https://docs.ansible.com/ansible/latest/collections/ovirt/ovirt/index.html
+
+# # - Downstream RHV documentation
+# #   https://cloud.redhat.com/ansible/automation-hub/redhat/rhv
+
+# # Copy over to hosted engine ovirt01.penginpages.local the common /etc/hosts file for infrastructure for resolution pre-DNS/IDM servers up
+
+# # Change cluster "Default" to set Fency Policy disabled
+
+# # Change cluster "Default" to set Optimization "For Server Load" for 150% memory overcommit
+
+# # Change cluster "Default" to set Optimization "CPU Threads As Cores" to enabled
+
+# # Change cluster "Default" to set CPU Type: Intel Sandybridge Family to drop down to include medusa
+
+# # Add two other nodes to cluster: Ex: odin.penguinpages.local and medusa.penguinpages.local
+
+# # May not be needed: Fix binding of odin and medusa to link "ovirtmgmt" to bridge to mgmt NIC
+
+# # Add network "storage" to listed networks, as a bridge, attaching NICS from each server
+
+# # Map all three servers 10Gb NICs to the new "stoage" network
+
+# # Upload VM template Centos8stream
+
+# # Upload VMs NS01 NS02 IDM / DNS/ Plex hosts
+
+
+
