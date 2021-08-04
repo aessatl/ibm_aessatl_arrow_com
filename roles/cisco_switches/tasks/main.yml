@@ -3,12 +3,29 @@
 # # v1.0000 20210803
 # # File: /roles/cisco_switches/tasks/main.yml
 # # Note: variables from /group_vars/all.yml are automatically consumed and reflect site wide variables
-
+# Documentation: https://docs.ansible.com/ansible/latest/network/user_guide/platform_nxos.html
 
 ########## Preflight Check ###################
 # TASK: SSH Password login test for nodes
 # Working: just shorten up playbook
 - import_tasks: ../../task_ping_nodes.yml
+
+# # Backup switch
+# - name: Backup current switch config (nxos)
+#   cisco.nxos.nxos_config:
+#     backup: yes
+#   register: backup_nxos_location
+#   when: ansible_network_os == 'cisco.nxos.nxos'
+
+  
+# Port sw10
+# interface Ethernet102/1/35
+#   description fc1cmm2
+#   switchport access vlan 10
+#   spanning-tree port type edge
+
+
+
 
 # # Run wall test on each node to see consoles being effected
 # - import_tasks: ../../task_wall_test_nodes.yml
