@@ -4,11 +4,31 @@
 # # File: /roles/cisco_switches/tasks/main.yml
 # # Note: variables from /group_vars/all.yml are automatically consumed and reflect site wide variables
 # Documentation: https://docs.ansible.com/ansible/latest/network/user_guide/platform_nxos.html
+# Documentation: https://docs.ansible.com/ansible/latest/collections/cisco/nxos/nxos_config_module.html  
+# Prerequs: ssh via user ansible to switch without password: https://www.cisco.com/c/en/us/support/docs/voice/mds/200640-Ssh-into-NX-OS-Switches-using-key-based.pdf
+##################### Get current switch SSH key Ex:  sw10 ##################### <<< Broken... this is for ssh login and is very rarely used >>>
+# sw10(config)# show ssh key
+# **************************************
+# rsa Keys generated:Fri Apr 10 13:48:17 2015
+
+# ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC0zRUpJ+eF8b6sEd43rdahwYutZ2cedOywituGmpPBgMjpllxZcyVlfN2h+TxeqAyu1nw4qZJjE7qMatuCejHbUTkIC1hhZJEpVUooD8HzvkZiBtgl5eLFI3dMFe4poLU1aFQ+kecK+4jyz7u42Mh87DqvUnQNrzKfZPjXJaBdDw==
+
+# bitcount:1024
+# fingerprint:
+# 63:48:f1:10:df:62:90:34:76:f7:02:64:b7:66:37:f2
+# **************************************
+# could not retrieve dsa key information
+# **************************************
+# sw10(config)#
+####################  Set this as ssh_key  variable under hosts.yml ####################
+
+
+
 
 ########## Preflight Check ###################
 # TASK: SSH Password login test for nodes
 # Working: just shorten up playbook
-- import_tasks: ../../task_ping_nodes.yml
+# - import_tasks: ../../task_ping_nodes.yml
 
 # # Backup switch
 # - name: Backup current switch config (nxos)
@@ -17,15 +37,35 @@
 #   register: backup_nxos_location
 #   when: ansible_network_os == 'cisco.nxos.nxos'
 
+
+# To check for non-IaC changes run diff on master configuration file 
+# Last step must then be to save config as new master
+# <<<<<<<<<<< Broken .. not sure where is best to reference file.. local vs remote server >>>>>
+# - name: diff the running-config against a provided config
+#   cisco.nxos.nxos_config:
+#     diff_against: intended
+#     intended_config: "{{ lookup('file', 'master.cfg') }}"
+
+
+# # Set switch Name
+# - name: Change Switch hostname sw10
+#   cisco.nxos.nxos_config:
+#     lines:
+#     - hostname sw10
   
 # Port sw10
 # interface Ethernet102/1/35
 #   description fc1cmm2
 #   switchport access vlan 10
 #   spanning-tree port type edge
-
-
-
+- name: Port interface Ethernet102/1/35
+  cisco.nxos.nxos_config:
+    lines:
+    - description fc1cmm2
+    - switchport access vlan 10
+    - spanning-tree port type edge
+    - no shutdown
+    parents: interface Ethernet102/1/35
 
 # # Run wall test on each node to see consoles being effected
 # - import_tasks: ../../task_wall_test_nodes.yml

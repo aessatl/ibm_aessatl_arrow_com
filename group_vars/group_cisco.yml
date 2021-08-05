@@ -1,0 +1,10 @@
+---
+# CISCO Switch  variables used by ansible
+# file /group_vars/group_cisco.yml used by ansible by default for entire site
+# v0.001 20210804
+# Documenation:  https://docs.ansible.com/ansible/latest/network/user_guide/platform_nxos.html   CLI due to NOS being 4.x vs minimum required
+
+ansible_connection: ansible.netcommon.network_cli
+ansible_network_os: cisco.nxos.nxos
+ansible_user: ansible
+ansible_pass: "{{ vault_ansible_sudo_password }}"

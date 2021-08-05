@@ -1,0 +1,17 @@
+---
+- hosts: cisco
+  gather_facts: no
+
+  tasks:
+    - name: Port interface Ethernet102/1/35
+      cisco.nxos.nxos_config:
+        lines:
+        - description fc1cmm2
+        - switchport access vlan 10
+        - spanning-tree port type edge
+        - no shutdown
+        parents: interface Ethernet102/1/35
+      become: no
+
+#### ssh establishs and connects
+#### and then it sends a prompt back to get the password

@@ -9,9 +9,10 @@
 
 # Deployment Target systems defined
 - name: Ansible Pinging switches which validates SSH passwordless login
-  hosts: group_switches
-  #gather_facts: false
+  hosts: sw10
+  gather_facts: false
   become: false
+  # remote_user: ansible
 
 # ####### Deployment Section #############
 # Deployment of CISCO 10Gb Nexus 5k with Nexus 2k leaf switches

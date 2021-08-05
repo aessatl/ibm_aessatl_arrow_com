@@ -38,7 +38,12 @@ ansible_path: /mnt/c/GitHub/aessatl_ibm_aessatl_arrow_com/ibm_aessatl_arrow_com 
 
 vault_ansible_sudo: ansible # User account used for most ansible tasks for dedicated logging of automation tasks
 vault_ansible_sudo_password: !vault |
-ansible-vault encrypt_string  'Passw0rd' --name 'vault_ansible_sudo_password'
+          $ANSIBLE_VAULT;1.1;AES256
+          33633632653034393864613563393561313338376535306333393234316134326437663230303866
+          6237613665316537393738326139393130653365356435660a653735373465643739616562356131
+          66646332316430333066326234333864376235313837663161393161386634306432346638316633
+          3330323638326436620a643830376235653333666536383062363962613433613165306564643635
+          3037
 vault_root_shell_sudo: root # User account used for root elevation
 vault_root_shell_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

@@ -1,0 +1,8 @@
+---
+all:
+  children:
+    cisco:
+      hosts:
+        sw10:
+          ansible_connection: ansible.netcommon.network_cli
+          ansible_network_os: cisco.nxos.nxos

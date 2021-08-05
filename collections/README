@@ -1,0 +1,2 @@
+# This is where ansible / tower will check for which collections are needed for the various playbooks
+# Ex: Update via CLI:  ansible-galaxy collection install -r collections/requirements.yml 
