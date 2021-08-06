@@ -1,6 +1,6 @@
-# PCC Hands on Lab #
+# Arrow Solutions Lab - ~IBM Island~ - Alpharetta Georgia #
 
-![ArrowLogo](READMe_images/arrow.PNG)
+![ArrowLogo](/README_images/arrow.PNG)
 
 **This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
 
