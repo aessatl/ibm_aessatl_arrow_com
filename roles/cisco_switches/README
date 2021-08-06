@@ -15,7 +15,7 @@
 
 ## Prerequisites -  Linux host running Ansible Automation Platform outside the environment but access to all infrastructure##
 
-![azureportal](images/azureportal.PNG)
+![basic network diagram](./README_images/ibm_network_diagram.png)
 
 **contacts**
 Name | eMail | Domain
