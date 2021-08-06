@@ -1,5 +1,59 @@
-# This folder is for files and scripts related to OCP environments
-# v0.001 20210129
-# This folder reflects playbook and resources to bootstrap physical hosts and resources up to where an HCI NSPOF cluster is fully functional
-# Resources expected:  3 x Intel nodes with each having disk drives:  /sda OS boot  /sdb [vdo+gluster] <engine> <data> <vmstore> /sdc [vdo+gluster] <gv0> /sdd [vdo+ceph]<gv1>
-# VLANs 100 for mgmt and VM communication  VLAN 101 for dedicated storage replication and data transfer
+# PCC Hands on Lab #
+
+![ibm network diagram](READMe_images/arrow.PNG)
+
+**This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
+
+**We will perform the following tasks**
+
+* Deploy Networking switching
+* Deploy Fibre Channel SAN switching
+* Take POWER systems and deploy tasks via IaC
+* Deploy IBM SAN storage to hosts via IaC
+* Deployment of RedHat Openshift Clusters both x86 and POWER for demos
+
+
+## Prerequisites -  Linux host running Ansible Automation Platform outside the environment but access to all infrastructure##
+
+![azureportal](images/azureportal.PNG)
+
+**contacts**
+Name | eMail | Domain
+------------ | -------------
+Tony Owens | toowens@arrow.com | SAN and Storage
+Don Knall | dknall@arrow.com | POWER Systems
+
+
+
+## Section 1 - Powershell set up 
+
+**1.1 - Open powershell as an administrator and run the following command**
+
+* This command will reach out to the git and download the powershell script found at https://github.com/kylejep/PCC_Labs/
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$url = "https://raw.githubusercontent.com/kylejep/PCC_Labs/main/PCCinstall.ps1"
+$file = "$env:USERPROFILE\Desktop\PCCinstall.ps1"
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+```
+
+**1.2 - Run the script from an administrator Powershell**
+```Powershell
+powershell.exe -ExecutionPolicy ByPass -File $file
+```
+
+**This script is used to pull down and install all the necessary software we will need for the lab namely:**
+
+* **Chocolatey** - Windows based package manager used to install and manage software - https://chocolatey.org/
+* **Git commandline**  - used to interact with git repos - https://community.chocolatey.org/packages/git
+* **Packer** - image build manager used to create artifacts for server and infrastructrue builds expressed as code - https://community.chocolatey.org/packages/packer
+* **Terraform** - Used to orchestrate the provisioning of infrastrcutre expressed as code - https://community.chocolatey.org/packages/terraform
+* **Azure CLI** - azure command line tool that allows commands against Azure cloud - https://community.chocolatey.org/packages/azure-cli
+
+<br/>
+
+**1.3 - Change into a directory that you want to clone the repo into ie...**
+```powershell
+cd "~/desktop"
+```

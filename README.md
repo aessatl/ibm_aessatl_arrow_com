@@ -1,44 +1,46 @@
 # PCC Hands on Lab #
 
-![Overview](READMe_images/arrow.PNG)
+![ArrowLogo](READMe_images/arrow.PNG)
 
-**In our two hour lab session we will cover automation concepts and multiple tools to build an environement in Azure and later perform some automated configuration tasks**
+**This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
 
 **We will perform the following tasks**
 
-* Create an Azure account if you do not have one to use already
-* Use Powershell to pull down all the necessary components onto the Windows 10 workstation
-* Clone the files from a pre-configured github repository
-* Use Hashicorp Packer to create Azure images that contain customizations we will use later for configuration managagement 
-* Use Terraform to build our infrastructure using our custom images
-* Use Ansible to perform some configuration tasks against the target servers
+* Deploy Networking switching
+* Deploy Fibre Channel SAN switching
+* Take POWER systems and deploy tasks via IaC
+* Deploy IBM SAN storage to hosts via IaC
+* Deployment of RedHat Openshift Clusters both x86 and POWER for demos
 
 
-## Prerequisites -  Azure set up ##
+## Prerequisites -  Linux host running Ansible Automation Platform outside the environment but access to all infrastructure##
 
 ![azureportal](images/azureportal.PNG)
 
-**If you do not already have an Azure account with a usable subscription please first visit portal.azure.com and select create account**
+**contacts**
+Name | eMail | Domain
+------------ | -------------
+Tony Owens | toowens@arrow.com | SAN and Storage
+Don Knall | dknall@arrow.com | POWER Systems
 
-* This will require an email, phonenumber, and creditcard information
+* This repository is private at git: https://github.com/aessatl/ibm_aessatl_arrow_com
 
+## Section 1 - Deployment Strategy 
 
-## Section 1 - Powershell set up 
+**1.1 - Networking Infrastructure**
 
-**1.1 - Open powershell as an administrator and run the following command**
+* Primary playbook network_deploy.yml
 
-* This command will reach out to the git and download the powershell script found at https://github.com/kylejep/PCC_Labs/
-
-```powershell
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$url = "https://raw.githubusercontent.com/kylejep/PCC_Labs/main/PCCinstall.ps1"
-$file = "$env:USERPROFILE\Desktop\PCCinstall.ps1"
-(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+```cisco switches <<Legacy>>
+blah
 ```
 
-**1.2 - Run the script from an administrator Powershell**
-```Powershell
-powershell.exe -ExecutionPolicy ByPass -File $file
+**1.2 - IBM Storage**
+
+* Primary playbook storage_deploy.yml
+
+```flash
+
 ```
 
 **This script is used to pull down and install all the necessary software we will need for the lab namely:**
