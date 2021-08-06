@@ -1,6 +1,6 @@
-# Arrow Solutions Lab - ~IBM Island~ - Alpharetta Georgia #
+# Arrow Solutions Lab - IBM Island - Alpharetta Georgia #
 
-![ArrowLogo](/README_images/arrow.PNG)
+![Arrow Logo](/README_images/ArrowLogo.png)
 
 **This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
 
@@ -22,6 +22,12 @@ Name | eMail | Domain
 ------------ | -------------
 Tony Owens | toowens@arrow.com | SAN and Storage
 Don Knall | dknall@arrow.com | POWER Systems
+
+
+First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
 
 * This repository is private at git: https://github.com/aessatl/ibm_aessatl_arrow_com
 
