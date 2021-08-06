@@ -1,6 +1,6 @@
 # Arrow Solutions Lab - IBM Island - Alpharetta Georgia #
 
-![Arrow Logo](/README_images/ArrowLogo.png)
+![Arrow Corp Logo](README_images/ArrowLogo.png)
 
 **This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
 
@@ -12,10 +12,7 @@
 * Deploy IBM SAN storage to hosts via IaC
 * Deployment of RedHat Openshift Clusters both x86 and POWER for demos
 
-
 ## Prerequisites -  Linux host running Ansible Automation Platform outside the environment but access to all infrastructure##
-
-![azureportal](images/azureportal.PNG)
 
 **contacts**
 Name | eMail | Domain
@@ -29,11 +26,16 @@ First Header | Second Header
 Content from cell 1 | Content from cell 2
 Content in the first column | Content in the second column
 
+
+
+
 * This repository is private at git: https://github.com/aessatl/ibm_aessatl_arrow_com
 
 ## Section 1 - Deployment Strategy 
 
 **1.1 - Networking Infrastructure**
+
+![azureportal](README_images/ibm_network_diagram.png)
 
 * Primary playbook network_deploy.yml
 
