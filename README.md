@@ -21,9 +21,9 @@ Tony Owens | toowens@arrow.com | SAN and Storage
 Don Knall | dknall@arrow.com | POWER Systems
 
 
-First Header | Second Header
+Name | email | Domain
 ------------ | -------------
-Content from cell 1 | Content from cell 2
+Tony Owens | toowens@arrow.com | SAN and Storage
 Content in the first column | Content in the second column
 
 
