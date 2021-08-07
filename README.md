@@ -2,7 +2,13 @@
 
 ![Arrow Corp Logo](README_images/ArrowLogo.png)
 
-**This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
+## This repository is private at git: https://github.com/aessatl/ibm_aessatl_arrow_com
+
+# 
+
+This GitHub Repository is a consolidation of documenation as well as documentation on deployment of the Arrow Solution Center Lab IBM Island**
+
+# 
 
 **We will perform the following tasks**
 
@@ -11,25 +17,27 @@
 * Take POWER systems and deploy tasks via IaC
 * Deploy IBM SAN storage to hosts via IaC
 * Deployment of RedHat Openshift Clusters both x86 and POWER for demos
+</br>
+</br>
+</br>
+## Contact 
 
-## Prerequisites -  Linux host running Ansible Automation Platform outside the environment but access to all infrastructure##
+Name | email | Role
+------------ | ------------- | -------------
+Tony Owens | toowens@arrow.com | IBM Storage Architect
+Don Knall | dknall@arrow.com | IBM POWER Architect
 
-**contacts**
-Name | eMail | Domain
------------- | -------------
-Tony Owens | toowens@arrow.com | SAN and Storage
-Don Knall | dknall@arrow.com | POWER Systems
+#
+
+### Task Lists
+
+    - [ ] Build out Ansible Tower host to do trigger based push into lab
+    - [ ] Deploy switches
+    - [ ] Deploy POWER servers
+    - [ ] Deploy Intel servers
+    - [ ] Deploy IBM SAN Storage
 
 
-Name | email | Domain
------------- | -------------
-Tony Owens | toowens@arrow.com | SAN and Storage
-Content in the first column | Content in the second column
-
-
-
-
-* This repository is private at git: https://github.com/aessatl/ibm_aessatl_arrow_com
 
 ## Section 1 - Deployment Strategy 
 
@@ -61,7 +69,11 @@ blah
 
 <br/>
 
-**1.3 - Change into a directory that you want to clone the repo into ie...**
+**1.3 - IBM POWER servers**
+```powershell
+cd "~/desktop"
+```
+**1.4 - Openshift Container Framework**
 ```powershell
 cd "~/desktop"
 ```
