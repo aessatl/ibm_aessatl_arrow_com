@@ -57,3 +57,18 @@ powershell.exe -ExecutionPolicy ByPass -File $file
 ```powershell
 cd "~/desktop"
 ```
+
+
+###  Means to collect facts from existing state to build 'current state' of router
+
+``` ios_gather_facts.yml
+---
+- name: gather information from routers
+  hosts: cisco
+  gather_facts: no
+
+  tasks:
+    - name: gather router facts
+      ios_facts:
+```
+Then run  "ansible-playbook ios_gather_facts.yml -v"

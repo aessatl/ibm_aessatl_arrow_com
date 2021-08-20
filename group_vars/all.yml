@@ -28,7 +28,7 @@ ansible_path: /mnt/c/GitHub/aessatl_ibm_aessatl_arrow_com/ibm_aessatl_arrow_com 
 
 
 #############  Below are vault passwords for site
-# To add new account use format of "vault_<username>_<device/device type>" for username and then append "_password" for password Ex:  apache for http "vault_apache_http" password would be"vault_apache_http_password"
+# To add new account use format of "vault_<username>_<device/device type>https://ados.penguinpages.local/collection_penguinpages/cluster_devops/_git/cluster_devops" for username and then append "_password" for password Ex:  apache for http "vault_apache_http" password would be"vault_apache_http_password"
 # Break out fact for password seperate from fact of username
 # Documentation:
 # Command Example to add account: ansible-vault encrypt_string --vault-password-file ~/.vault_password 'Passw0rd' --name 'vault_admin_switch'

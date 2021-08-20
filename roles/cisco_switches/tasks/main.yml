@@ -62,7 +62,7 @@
   cisco.nxos.nxos_config:
     lines:
     - description fc1cmm2
-    - switchport access vlan 10
+    - switchport access vlan 11
     - spanning-tree port type edge
     - no shutdown
     parents: interface Ethernet102/1/35
