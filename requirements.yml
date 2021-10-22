@@ -1,9 +1,16 @@
 ---
-# This file is used for calling galaxy requirements to be installed
-# 20210304
+# This file is used for calling galaxy requirements to be installed of modules from galaxy.
+# 20211021
 # file: /requirements.yml
 # Needs testing
 # Documentation: https://docs.ansible.com/ansible/latest/galaxy/user_guide.html
-[galaxy]
-server_list = ovirt.ovirt
+# List what modules you have installed already:  ansible-galaxy list
+# Manual install of module: 
 
+[galaxy]
+- src: ibm.power_vios
+- src: ibm.power_aix
+- src: ibm.power_hmc
+- src: ibm.power_vios
+- src: redhat.openshift
+- src: vmware.vmware_rest

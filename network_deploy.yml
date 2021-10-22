@@ -1,35 +1,30 @@
 ---
 # Deployment of ibm ethernet switch environment 
-# v0.001 20210302
-# file: /ovirt_deploy.yml
+# v0.001 20211021
+# file: /network_deploy.yml
 # Prerequisits:
 # 1) Mellanox Switches with dedicated Mgmt IP
 # 2) user "ansible" with elevation privilage set.
-# How to use this file: Ex: ansible-playbook network_deploy.yml --limit  or to limit to one node  ansible-playbook hci_deploy.yml --limit thor
+# How to use this file: Ex: ansible-playbook network_deploy.yml --limit  or to limit to one switch  ansible-playbook network_deploy.yml --limit sw10
 
 # Deployment Target systems defined
 - name: Ansible Pinging switches which validates SSH passwordless login
-  hosts: sw10
+  hosts: group_switches
   gather_facts: false
   become: false
   # remote_user: ansible
 
 # ####### Deployment Section #############
-# Deployment of CISCO 10Gb Nexus 5k with Nexus 2k leaf switches
-  roles: 
-    - cisco_switches
 
 # # Deployment of Mellanox 25/100Gb switches based on cumulus NOS 
 #   roles: 
-#     - mellanox_switches
+#     - mellanox_100Gb_switches
 
-# # Deployment of BNT 1Gb switches based on ?? NOS 
+# # Deployment of Mellanox 1Gb switches based on cumulus NOS 
 #   roles: 
-#     - 1gb_switches
+#     - mellanox_1Gb_switches
 
-# # Deployment of Brocade VDX switches
+# # Deployment of Brocade FC
 #   roles: 
-#     - group_vdx
-
-
+#     - fc_switches
 
