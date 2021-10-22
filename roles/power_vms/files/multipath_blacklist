@@ -1,0 +1,16 @@
+}
+
+
+blacklist {
+device {
+{% if yourvariable == 'something' or othervariable == 'somethingelse' %}
+         devnode "^sd[a-z]"
+         wwid {{ ovirt_disk }}
+         wwid {{ data00_disk }}
+         wwid {{ data01_disk }}
+         protocol "(scsi:adt|scsi:sbp)"
+{% endif %}
+
+        }
+
+}

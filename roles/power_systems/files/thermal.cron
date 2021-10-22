@@ -1,9 +1,0 @@
-#!/bin/sh
-# Shell script  to save outputs of sensor data to SMB NAS share for later parsing and notification
-# This shell script is fubar and not sure why. I can touch files but not with variables on NAS
-HOST=$(hostname -s)
-DATE=$date +"%y%m%d%H%M"
-# Collect IPMI Data from system and dump to shared file path
-touch /media/sw2_backup/penguinpages_local_cluster/"$HOST"/thermal.out
-date +"%y%m%d%H%M" >> /media/sw2_backup/penguinpages_local_cluster/"$HOST"/thermal.out
-sensors >> /media/sw2_backup/penguinpages_local_cluster/"$HOST"/thermal.out

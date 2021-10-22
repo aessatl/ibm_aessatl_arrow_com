@@ -1,0 +1,4 @@
+# This folder is for files and scripts related to ibm storage environments
+# v0.001 20210803
+# This folder reflects playbook and resources to deploy storage within ibm.aessatl.arrow.com
+# Maintainer: Tony Owens

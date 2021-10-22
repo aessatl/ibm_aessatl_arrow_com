@@ -1,0 +1,33 @@
+# VDSM REVISION 2.0
+
+# This file is managed by vdsm.
+# Pushed out via ansible for HCI cluster
+defaults {
+    polling_interval            5
+    no_path_retry               16
+    user_friendly_names         no
+    flush_on_last_del           yes
+    fast_io_fail_tmo            5
+    dev_loss_tmo                30
+    max_fds                     4096
+}
+
+
+blacklist {
+device {
+{% if yourvariable == 'something' or othervariable == 'somethingelse' %}
+         devnode "^sd[a-z]"
+         wwid {{ ovirt_disk }}
+         wwid {{ data00_disk }}
+         wwid {{ data01_disk }}
+         protocol "(scsi:adt|scsi:sbp)"
+{% endif %}
+
+        }
+
+}
+
+
+overrides {
+    # NOTE: see comments in default section how to compute this value.
+    no_path_retry   16
